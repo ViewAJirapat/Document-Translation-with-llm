@@ -1,0 +1,5 @@
+[
+  {"id": "translate-4b", "name": "Typhoon Translate 1.5 4B (Q8_0)", "file": "typhoon-translate1.5-4b.Q8_0.gguf"},
+  {"id": "t25-qwen3-4b", "name": "Typhoon 2.5 Qwen3 4B (Q8_0)", "file": "typhoon2.5-qwen3-4b.Q8_0.gguf"},
+  {"id": "t21-gemma3-12b", "name": "Typhoon 2.1 Gemma3 12B (Q4_K_M)", "file": "typhoon2.1-gemma3-12b-q4_k_m.gguf"}
+]

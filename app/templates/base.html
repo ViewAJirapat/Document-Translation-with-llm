@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}PDF → Thai{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/">PDF → ไทย</a>
+  <nav><a href="/">Jobs</a><a href="/settings">Settings</a></nav>
+  <span id="server" class="pill">checking llama-server…</span>
+</header>
+<main>
+{% block main %}{% endblock %}
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

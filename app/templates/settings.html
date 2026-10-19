@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Settings · PDF → Thai{% endblock %}
+{% block main %}
+<section class="card">
+  <h1>Settings</h1>
+  {% if saved %}<p class="ok">Saved. The new settings apply to blocks translated from now on.</p>{% endif %}
+  <form method="post" action="/settings" class="settings">
+    <label for="glossary">Glossary</label>
+    <p class="muted">One term per line as <code>English = ไทย</code>. Leave the Thai side empty to keep a term in English.
+      A block is only sent the terms that appear in it.</p>
+    <textarea id="glossary" name="glossary" rows="10" lang="th"
+              placeholder="machine learning = การเรียนรู้ของเครื่อง&#10;dataset = ชุดข้อมูล&#10;overfitting =">{{ glossary }}</textarea>
+
+    <label for="extra_rules">Extra translation rules</label>
+    <p class="muted">One rule per line, added after the built-in rules:</p>
+    <ol class="muted rules">{% for r in base_rules %}<li>{{ r }}</li>{% endfor %}</ol>
+    <textarea id="extra_rules" name="extra_rules" rows="4"
+              placeholder="Use the polite particle ครับ/ค่ะ only in dialogue.">{{ extra_rules }}</textarea>
+    <div><button type="submit">Save</button></div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>llama-server</h2>
+  <p>URL <code>{{ llama_url }}</code> · API key {{ 'set' if has_key else 'not set' }}</p>
+  <p class="muted">Change these with <code>LLAMA_URL</code> and <code>LLAMA_API_KEY</code> in <code>.env</code>,
+    then run <code>docker compose up -d</code>.</p>
+</section>
+{% endblock %}

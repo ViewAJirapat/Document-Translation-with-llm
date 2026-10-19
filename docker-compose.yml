@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    image: ll-trans
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      LLAMA_URL: ${LLAMA_URL:-http://host.docker.internal:8080}
+      LLAMA_API_KEY: ${LLAMA_API_KEY:-}
+      DOCX_FONT: ${DOCX_FONT:-Leelawadee UI}
+      DOCX_FONT_SIZE: ${DOCX_FONT_SIZE:-11}
+    volumes:
+      - appdata:/data
+    # Docker Desktop provides host.docker.internal already; this makes it work on Linux hosts too.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+volumes:
+  appdata:

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ job.filename }} · PDF → Thai{% endblock %}
+{% block main %}
+<section class="card" id="job" data-id="{{ job.id }}" data-status="{{ job.status }}" data-since="{{ now }}">
+  <div class="title-row">
+    <h1 class="file">{{ job.filename }}</h1>
+    <span class="badge s-{{ job.status }}" id="status">{{ STATUS_LABELS[job.status] }}</span>
+  </div>
+  <div class="progress"><div id="bar" style="width: {{ (100 * progress.done / progress.total) if progress.total else 0 }}%"></div></div>
+  <p class="muted">
+    <span id="count">{{ progress.done }} / {{ progress.total }}</span> blocks translated
+    · <span id="pages">{{ job.pages or '?' }}</span> pages
+    {% if job.model %}· model {{ job.model }}{% endif %}
+  </p>
+  <p class="alert" id="error"{% if not job.error %} hidden{% endif %}>{{ job.error or '' }}</p>
+  <div class="actions">
+    {% if job.status in ACTIVE %}
+      <form method="post" action="/jobs/{{ job.id }}/cancel"><button class="secondary">Cancel</button></form>
+    {% else %}
+      {% if job.status in ('failed', 'cancelled') %}
+      <form method="post" action="/jobs/{{ job.id }}/resume"><button>Resume</button></form>
+      {% endif %}
+      {% if blocks %}
+      <form method="post" action="/jobs/{{ job.id }}/retranslate"
+            onsubmit="return confirm('Translate every block again? Translations you edited by hand will be replaced.')">
+        <button class="secondary">Re-translate all</button>
+      </form>
+      {% endif %}
+    {% endif %}
+    {% if blocks %}
+      <a class="button" href="/jobs/{{ job.id }}/export.docx">Download DOCX</a>
+      <a class="button" href="/jobs/{{ job.id }}/export.pdf">Download PDF</a>
+    {% endif %}
+    <form method="post" action="/jobs/{{ job.id }}/delete" onsubmit="return confirm('Delete this job and its uploaded PDF?')">
+      <button class="danger">Delete</button>
+    </form>
+  </div>
+</section>
+
+{% if blocks %}
+<p class="muted hint">Edit either side; changes save when you leave the box. ↻ translates one block again from the English on screen.</p>
+<div class="blocks">
+  <div class="blocks-head"><span></span><span>English</span><span>ไทย</span></div>
+  {% for b in blocks %}
+  <div class="block k-{{ b.kind }} st-{{ b.status }}" data-block="{{ b.id }}">
+    <div class="tag">p.{{ b.page or '?' }}<br>{{ b.kind | replace('_', ' ') }}</div>
+    <textarea data-field="source" spellcheck="false" aria-label="English text">{{ b.source }}</textarea>
+    {% if b.status == 'skip' %}
+    <div class="verbatim muted">Kept as-is ({{ b.kind }})</div>
+    {% else %}
+    <div class="out">
+      <textarea data-field="translation" lang="th" aria-label="Thai translation" placeholder="waiting for translation…">{{ b.translation or '' }}</textarea>
+      <button class="icon retranslate" type="button" title="Translate this block again">↻</button>
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% elif job.status in ('queued', 'extracting') %}
+<p class="muted">Reading the PDF… scanned pages take longer because they are OCR'd.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>{{ title }}</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2cm 2cm 2.2cm;
+    @bottom-center { content: counter(page); font-size: 9pt; color: #666; }
+  }
+  body { font-family: {{ font | safe }}; font-size: 13pt; line-height: 1.55; color: #111; }
+  h1, h2, h3, h4 { line-height: 1.3; margin: 1em 0 0.4em; break-after: avoid; }
+  h1 { font-size: 20pt; }
+  h2 { font-size: 17pt; }
+  h3 { font-size: 15pt; }
+  h4 { font-size: 13.5pt; }
+  p { margin: 0 0 0.55em; }
+  ul { margin: 0 0 0.3em; padding-left: 1.4em; }
+  .li { padding-left: 1.6em; text-indent: -1.6em; }
+  .caption { font-size: 11pt; color: #444; }
+  table { border-collapse: collapse; width: 100%; margin: 0.4em 0 1em; font-size: 11.5pt; }
+  th, td { border: 0.6pt solid #888; padding: 3pt 5pt; vertical-align: top; text-align: left; }
+  th { background: #eee; }
+  pre { font-family: "DejaVu Sans Mono", monospace; font-size: 9.5pt; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+{% for it in items %}
+  {% if it.kind == 'heading' %}
+  <h{{ it.level }}>{{ it.text }}</h{{ it.level }}>
+  {% elif it.kind == 'list_item' %}
+    {% if it.marker %}<p class="li">{{ it.marker }} {{ it.text }}</p>{% else %}<ul><li>{{ it.text }}</li></ul>{% endif %}
+  {% elif it.kind == 'table' and it.rows %}
+  <table>
+    <thead><tr>{% for c in it.rows[0] %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+    <tbody>{% for r in it.rows[1:] %}<tr>{% for c in r %}<td>{{ c }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+  </table>
+  {% elif it.kind in ('caption', 'footnote') %}
+  <p class="caption">{{ it.text }}</p>
+  {% elif it.kind in ('code', 'formula') %}
+  <pre>{{ it.text }}</pre>
+  {% else %}
+  <p>{{ it.text }}</p>
+  {% endif %}
+{% endfor %}
+</body>
+</html>

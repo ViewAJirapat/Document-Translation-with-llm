@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block main %}
+<section class="card">
+  <h1>Translate a PDF to Thai</h1>
+  {% if error %}<p class="alert">{{ error }}</p>{% endif %}
+  <form method="post" action="/jobs" enctype="multipart/form-data" class="upload">
+    <input type="file" name="file" accept="application/pdf,.pdf" required>
+    <label class="check">
+      <input type="checkbox" name="force_ocr" value="true">
+      Force OCR on every page <span class="muted">(for scans whose text layer is wrong or garbled)</span>
+    </label>
+    <div><button type="submit">Upload and translate</button></div>
+    <p class="muted">English PDFs up to {{ max_mb }} MB. Scanned pages are detected and OCR'd automatically.</p>
+  </form>
+</section>
+
+<section>
+  <h2>Jobs</h2>
+  {% if jobs %}
+  <div class="table-wrap">
+  <table class="jobs">
+    <thead><tr><th>File</th><th>Pages</th><th>Status</th><th>Translated</th><th>Uploaded</th></tr></thead>
+    <tbody>
+    {% for j in jobs %}
+      <tr data-job="{{ j.id }}">
+        <td><a href="/jobs/{{ j.id }}">{{ j.filename }}</a></td>
+        <td class="num" data-f="pages">{{ j.pages or '–' }}</td>
+        <td><span class="badge s-{{ j.status }}" data-f="status">{{ STATUS_LABELS[j.status] }}</span></td>
+        <td class="num" data-f="progress">{% if j.total %}{{ j.done }} / {{ j.total }}{% else %}–{% endif %}</td>
+        <td class="muted" data-time="{{ j.created_at }}"></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+  <p class="muted">No jobs yet. Upload a PDF to start.</p>
+  {% endif %}
+</section>
+{% endblock %}

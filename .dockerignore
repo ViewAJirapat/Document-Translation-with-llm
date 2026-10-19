@@ -1,0 +1,10 @@
+# Keep the build context small: models/ alone is ~16 GB.
+models/
+tools/
+bench/
+tests/
+data/
+.env
+.git
+**/__pycache__
+**/*.pyc
