@@ -27,9 +27,13 @@ def test_prompt_only_includes_glossary_terms_present_in_text():
     assert prompt.endswith("Source Text:\nThe Dataset shows overfitting.")
 
 
-def test_table_prompt_adds_table_rule():
-    assert translate.TABLE_RULE in translate.build_prompt("| a |\n|---|\n| b |", "table")
-    assert translate.TABLE_RULE not in translate.build_prompt("plain", "paragraph")
+def test_table_prompt_swaps_markdown_rule_for_table_rules():
+    table_prompt = translate.build_prompt("| a |\n|---|\n| b |", "table")
+    assert all(rule in table_prompt for rule in translate.TABLE_RULES)
+    assert translate.BASE_RULES[1] not in table_prompt  # it makes the model skip the header row
+    plain_prompt = translate.build_prompt("plain", "paragraph")
+    assert translate.BASE_RULES[1] in plain_prompt
+    assert translate.TABLE_RULES[1] not in plain_prompt
 
 
 def test_split_text_keeps_every_word_and_respects_limit():

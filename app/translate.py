@@ -17,7 +17,12 @@ BASE_RULES = [
     "Keep numbers, people's names, URLs, code and Markdown formatting (headings, lists, tables, bold) unchanged.",
     "Use natural, formal written Thai.",
 ]
-TABLE_RULE = "The text is a Markdown table: keep every row, column and | separator exactly; translate only the text inside the cells."
+# Tables swap rule 2 for these: with "keep Markdown (... tables ...) unchanged" in the prompt, the model
+# leaves the header row in English.
+TABLE_RULES = [
+    "Keep numbers, people's names, URLs and code unchanged.",
+    "The text is a Markdown table: translate every cell into Thai, including the header row; keep the same rows, columns and | separators.",
+]
 
 # A chunk this size (~800 prompt tokens) plus its Thai output fits comfortably in an 8k context.
 MAX_WORDS = 600
@@ -44,9 +49,7 @@ def parse_glossary(text):
 
 
 def build_prompt(text, kind="paragraph", glossary=(), extra_rules=()):
-    rules = list(BASE_RULES)
-    if kind == "table":
-        rules.append(TABLE_RULE)
+    rules = [BASE_RULES[0], *TABLE_RULES, BASE_RULES[2]] if kind == "table" else list(BASE_RULES)
     lower = text.lower()
     for en, th in glossary:
         # Only terms that occur in this chunk, so long glossaries don't crowd the prompt.
